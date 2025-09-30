@@ -76,4 +76,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 
 # Run the Server service
 # Railway provides PORT env var automatically
-CMD ["sh", "-c", "python -m uvicorn src.server.main:socket_app --host 0.0.0.0 --port ${PORT:-8181} --workers 1"]
+CMD ["sh", "-c", "python -m uvicorn src.server.main:app --host 0.0.0.0 --port ${PORT:-8181} --workers 1"]
