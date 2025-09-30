@@ -1,0 +1,43 @@
+# MCP Service - Lightweight HTTP-based microservice  
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install uv
+RUN pip install --no-cache-dir uv
+
+# Copy pyproject.toml for dependency installation
+COPY python/pyproject.toml .
+
+# Install only mcp dependencies using uv
+RUN uv pip install --system --group mcp
+
+# Create minimal directory structure
+RUN mkdir -p src/mcp_server/features/projects src/mcp_server/features/tasks src/mcp_server/features/documents src/server/services src/server/config
+
+# Copy only MCP-specific files
+COPY python/src/mcp_server/ src/mcp_server/
+COPY python/src/__init__.py src/
+
+# Copy the server files MCP needs for HTTP communication
+COPY python/src/server/__init__.py src/server/
+COPY python/src/server/services/__init__.py src/server/services/
+COPY python/src/server/services/mcp_service_client.py src/server/services/
+COPY python/src/server/services/client_manager.py src/server/services/
+COPY python/src/server/services/mcp_session_manager.py src/server/services/
+COPY python/src/server/config/__init__.py src/server/config/
+COPY python/src/server/config/service_discovery.py src/server/config/
+COPY python/src/server/config/logfire_config.py src/server/config/
+
+# Set environment variables
+ENV PYTHONPATH="/app:$PYTHONPATH"
+ENV PYTHONUNBUFFERED=1
+
+# Expose MCP port
+ARG ARCHON_MCP_PORT=8051
+ENV ARCHON_MCP_PORT=${ARCHON_MCP_PORT}
+EXPOSE ${ARCHON_MCP_PORT}
+
+# Run the MCP server
+# Use Railway's PORT or default to 8051
+CMD ["sh", "-c", "python -m uvicorn src.mcp_server.main:app --host 0.0.0.0 --port ${PORT:-8051}"]
