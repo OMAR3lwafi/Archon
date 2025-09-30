@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     && pip install --no-cache-dir uv
 
 # Copy pyproject.toml for dependency installation
-COPY pyproject.toml .
+COPY python/pyproject.toml .
 
 # Install server dependencies to a virtual environment using uv
 RUN uv venv /venv && \
@@ -56,9 +56,9 @@ ENV PATH=/venv/bin:$PATH
 RUN playwright install chromium
 
 # Copy server code and tests
-COPY src/server/ src/server/
-COPY src/__init__.py src/
-COPY tests/ tests/
+COPY python/src/server/ src/server/
+COPY python/src/__init__.py src/
+COPY python/tests/ tests/
 
 # Set environment variables
 ENV PYTHONPATH="/app:$PYTHONPATH"
