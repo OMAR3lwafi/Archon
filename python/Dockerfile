@@ -75,4 +75,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD sh -c "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:${ARCHON_SERVER_PORT}/health')\""
 
 # Run the Server service
-CMD sh -c "python -m uvicorn src.server.main:socket_app --host 0.0.0.0 --port ${ARCHON_SERVER_PORT} --workers 1"
+# Railway provides PORT env var automatically
+CMD ["sh", "-c", "python -m uvicorn src.server.main:socket_app --host 0.0.0.0 --port ${PORT:-8181} --workers 1"]
